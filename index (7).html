@@ -1169,6 +1169,61 @@ function buildDoc(obj) {
   return '<!doctype html>\n<html lang="vi"><head>' + HEAD + '<style id="app-css">' + css.textContent + '</style></head><body><div id="app"></div>' +
     '<script id="app-data" type="application/json">' + json + '</' + 'script><script id="app-js">' + js.textContent + '</' + 'script></body></html>';
 }
+async function capNhatLenWebTuDong() {
+    const GITHUB_USERNAME = "keiquockhanh-source";
+    const REPO_NAME = "cong-lam-bai";
+    const TOKEN = "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";
+    const FILE_PATH = "index.html";
+
+    let newContent = "";
+    if (typeof buildDoc === "function" && typeof state !== "undefined") {
+        newContent = buildDoc(state);
+    } else {
+        newContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    }
+
+    const encoder = new TextEncoder();
+    const data = encoder.encode(newContent);
+    let binary = "";
+    for (let i = 0; i < data.length; i++) {
+        binary += String.fromCharCode(data[i]);
+    }
+    const contentBase64 = btoa(binary);
+
+    try {
+        alert("⏳ Đang đẩy dữ liệu lên GitHub, vui lòng đợi vài giây...");
+
+        const getFileUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_PATH}`;
+        const fileRes = await fetch(getFileUrl, {
+            headers: { "Authorization": `token ${TOKEN}` }
+        });
+        const fileData = await fileRes.json();
+        const currentSha = fileData.sha;
+
+        const updateRes = await fetch(getFileUrl, {
+            method: "PUT",
+            headers: {
+                "Authorization": `token ${TOKEN}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: "Cap nhat hoc vien tu dong tu Dashboard",
+                content: contentBase64,
+                sha: currentSha
+            })
+        });
+
+        if (updateRes.ok) {
+            alert("✅ ĐÃ CẬP NHẬT THÀNH CÔNG! Web Netlify sẽ tự đổi sau khoảng 10-20 giây.");
+        } else {
+            const err = await updateRes.json();
+            alert("❌ Lỗi cập nhật: " + (err.message || "Không thể cập nhật"));
+        }
+    } catch (error) {
+        console.error(error);
+        alert("❌ Có lỗi xảy ra khi kết nối tới GitHub!");
+    }
+}
 function noPublishFallback(html) { if (isMain()) downloadSite(html); else packageModal(); }
 function publish() {
   var obj = publishObj(), html, dup = findDupUser(obj);
@@ -1286,7 +1341,12 @@ function vFirst() {
       np, np2, err, h('button', { class: 'btn primary big', type: 'button', onclick: next }, 'Tiếp tục →')];
   } else {
     var em = h('input', { class: 'in lg', type: 'email', autocomplete: 'email', placeholder: 'Gmail của bạn', 'aria-label': 'Gmail khôi phục', value: F.email || '', disabled: !!F.code });
-    var done = h('button', { class: 'btn primary big', type: 'button', disabled: true }, 'Hoàn tất & tải bản trang mới');
+    var done = h('button', { 
+    class: 'btn primary big', 
+    type: 'button', 
+    disabled: true,
+    onclick: 'capNhatLenWebTuDong()' 
+}, '🚀 Cập nhật lên web tự động');
     var parts = [h('h1', null, 'Liên kết Gmail để lấy lại tài khoản'), h('p', { class: 'sub' }, 'Nếu quên mật khẩu, bạn dùng Gmail này cùng mã khôi phục để đặt lại. Mã sẽ được lưu vào chính hộp thư của bạn.'), em];
     if (!F.code) {
       parts.push(err, h('button', { class: 'btn primary big', type: 'button', onclick: function () {
