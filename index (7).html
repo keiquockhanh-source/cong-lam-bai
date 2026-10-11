@@ -1389,8 +1389,8 @@ function forgotModal() {
     dm.pass = mkPass(np.value); dm.mustChange = false;
     LS.set('lpq_draft_main', { base: hash(JSON.stringify(S.pub)), data: d });
     close(); enterManager(m.id);
-    toast('Đã đặt lại mật khẩu. Hãy tải bản trang mới và đưa lên web để mật khẩu mới có hiệu lực cho mọi người.');
-    setTimeout(publish, 500);
+    toast('Đã đặt lại mật khẩu. Hãy bấm "🚀 Cập nhật lên web tự động" để mật khẩu mới có hiệu lực cho mọi người.');
+setTimeout(publish, 500);
   }
   close = modal('Quên mật khẩu', h('div', null, h('p', { class: 'hint', style: 'margin-bottom:12px' }, 'Nhập Gmail đã liên kết và mã khôi phục (đã gửi vào hộp thư của bạn lúc thiết lập).'),
     h('div', { style: 'display:grid;gap:10px' }, em, cd, np, np2), err), [
@@ -1410,7 +1410,7 @@ function securityCard() {
       if (!strongPw(np.value)) { toast('Mật khẩu cần ít nhất 10 ký tự, gồm cả chữ và số.'); return; }
       if (np.value !== np2.value) { toast('Hai mật khẩu chưa khớp.'); return; }
       m.pass = mkPass(np.value); touch(); np.value = ''; np2.value = '';
-      toast('Đã đổi mật khẩu. Hãy ' + (S.standalone ? 'tải bản trang mới và đưa lên web' : 'xuất bản') + ' để có hiệu lực.');
+      toast('Đã đổi mật khẩu. Hãy bấm ' + (S.standalone ? '"🚀 Cập nhật lên web tự động"' : '"Xuất bản"') + ' để có hiệu lực.');
     } }, 'Đổi mật khẩu')),
     h('div', { class: 'lbl', style: 'font-weight:700;font-size:14px;margin-bottom:6px' }, 'Gmail khôi phục'),
     h('p', { class: 'hint', style: 'margin-bottom:8px' }, m.recovery ? 'Đã liên kết: ' + m.recovery.hint + '. Tạo mã mới sẽ làm mã cũ hết hiệu lực.' : 'Chưa liên kết. Hãy liên kết Gmail để lấy lại tài khoản khi quên mật khẩu.'),
@@ -1419,7 +1419,7 @@ function securityCard() {
       var code = genRecovery(), email = normEmail(em.value);
       m.recovery = mkRecovery(email, code); touch();
       box.textContent = ''; box.appendChild(recoveryBox(email, code, m.user));
-      box.appendChild(h('p', { class: 'hint', style: 'margin-top:8px' }, 'Hãy lưu mã rồi tải bản trang mới lên web để mã có hiệu lực.'));
+      box.appendChild(h('p', { class: 'hint', style: 'margin-top:8px' }, 'Hãy lưu mã rồi bấm nút "🚀 Cập nhật lên web tự động" để mã có hiệu lực.'));
     } }, m.recovery ? 'Tạo mã khôi phục mới' : 'Tạo mã khôi phục')),
     box);
 }
@@ -1441,7 +1441,7 @@ function vTeacher() {
         h('div', { class: 'acts' },
           h('button', { class: 'btn sm', type: 'button', onclick: startPreview }, '👁 Xem thử như học viên'),
           h('button', { class: 'btn sm', type: 'button', onclick: leaveManager }, 'Đăng xuất'))),
-      h('div', { class: 'pub' }, chip, h('button', { class: 'btn primary sm', type: 'button', onclick: publish }, S.standalone ? (main ? '⬇ Tải bản trang mới (index.html)' : '📦 Gửi bài cho quản lý chính') : '🚀 Xuất bản cho học viên'))),
+      h('div', { class: 'pub' }, chip, h('button', { class: 'btn primary sm', type: 'button', onclick: capNhatLenWebTuDong }, S.standalone ? (main ? '🚀 Cập nhật lên web tự động' : '📦 Gửi bài cho quản lý chính') : '🚀 Xuất bản cho học viên'))),
     h('div', { class: 'tabs', role: 'tablist' }, tabs.map(function (t) {
       return h('button', { class: 'tab' + (T.tab === t[0] ? ' on' : ''), type: 'button', role: 'tab', 'aria-selected': T.tab === t[0] ? 'true' : 'false', onclick: function () { T.tab = t[0]; T.unit = null; render(); } }, t[1]);
     })),
@@ -2373,7 +2373,7 @@ function syncCard() {
       h('li', null, 'Mở sheets.new để tạo Google Sheet mới → menu Tiện ích mở rộng → Apps Script. Xóa mã mẫu, dán đoạn mã, bấm Lưu.'),
       h('li', null, 'Bấm Triển khai → Tùy chọn triển khai mới → loại “Ứng dụng web”. Thực thi với tư cách: Tôi. Người có quyền truy cập: Bất kỳ ai. Bấm Triển khai và cho phép quyền khi Google hỏi.'),
       h('li', null, 'Sao chép “URL ứng dụng web” (kết thúc bằng /exec) dán vào ô dưới, bấm Kiểm tra kết nối.'),
-      h('li', null, 'Cuối cùng ' + (S.standalone ? 'tải bản trang mới và đưa lên web' : 'xuất bản') + ' để học viên bắt đầu gửi kết quả.')),
+      h('li', null, 'Cuối cùng bấm "🚀 Cập nhật lên web tự động" để học viên bắt đầu gửi kết quả.')),
     h('div', { class: 'acts', style: 'margin-bottom:12px' }, h('button', { class: 'btn', type: 'button', onclick: showScript }, 'Tạo đoạn mã')), box,
     field('URL ứng dụng web', urlIn), field('Mã đọc kết quả (chỉ lưu trên máy bạn)', rkIn),
     h('div', { class: 'acts' }, h('button', { class: 'btn', type: 'button', onclick: function () {
